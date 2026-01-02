@@ -8,6 +8,7 @@
     "server": "ts-node -P ./server/server.tsconfig.json ./server/server.ts",
     "build": "ng build",
     "test": "ng test",
+    "test:headless": "ng test --browsers ChromeHeadless",
     "lint": "ng lint",
     "cypress:open": "cypress open",
     "cypress:run": "cypress run",
