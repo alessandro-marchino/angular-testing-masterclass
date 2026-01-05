@@ -31,11 +31,22 @@ describe('CoursesCardListComponent', () => {
     fixture.detectChanges();
 
     const cards = el.queryAll(By.css('.course-card'));
-    expect(cards).toBeTruthy();
-    expect(cards.length).toBe(12);
+    expect(cards).toBeTruthy('Could not find cards');
+    expect(cards.length).toBe(12, 'Unexpected number of courses');
   });
 
   it('should display the first course', () => {
-    pending();
+    component.courses = setupCourses();
+    fixture.detectChanges();
+
+    const course = component.courses[0];
+    const card = el.query(By.css('.course-card:first-child'));
+    expect(card).toBeTruthy('Could not find course card');
+
+    const title = card.query(By.css('mat-card-title'));
+    const image = card.query(By.css('img'));
+    expect(title.nativeElement.textContent).toBe(course.titles.description);
+    expect(image.nativeElement.src).toBe(course.iconUrl);
+
   });
 });
