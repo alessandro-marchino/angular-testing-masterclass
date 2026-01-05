@@ -43,15 +43,21 @@ describe('HomeComponent', () => {
     fixture.detectChanges();
 
     const tabs = el.queryAll(By.css('.mdc-tab__text-label'));
-    expect(tabs.length).toBe(1);
+    expect(tabs.length).toBe(1, 'Unexpected number of tabs found');
   });
   it('Should display only advanced courses', () => {
     coursesServiceSpy.findAllCourses.and.returnValue(of(setupCourses().filter(c => c.category === 'ADVANCED')));
     fixture.detectChanges();
 
     const tabs = el.queryAll(By.css('.mdc-tab__text-label'));
-    expect(tabs.length).toBe(1);
+    expect(tabs.length).toBe(1, 'Unexpected number of tabs found');
   });
-  xit('Should display both tabs', () => {});
+  it('Should display both tabs', () => {
+    coursesServiceSpy.findAllCourses.and.returnValue(of(setupCourses()));
+    fixture.detectChanges();
+
+    const tabs = el.queryAll(By.css('.mdc-tab__text-label'));
+    expect(tabs.length).toBe(2, 'Unexpected number of tabs found');
+  });
   xit('Should display advanced courses when tab clicked', () => {});
 });
