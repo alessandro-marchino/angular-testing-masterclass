@@ -95,3 +95,4 @@ $RECYCLE.BIN/
 
 # End of https://www.toptal.com/developers/gitignore/api/angular,visualstudiocode,linux,windows
 
+cypress/screenshots/
