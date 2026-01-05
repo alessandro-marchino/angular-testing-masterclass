@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed, waitForAsync } from "@angular/core/testing";
+import { ComponentFixture, fakeAsync, flush, flushMicrotasks, TestBed, tick, waitForAsync } from "@angular/core/testing";
 import { HomeComponent } from "./home.component";
 import { DebugElement } from "@angular/core";
 import { CoursesModule } from "../courses.module";
@@ -59,19 +59,18 @@ describe('HomeComponent', () => {
     const tabs = el.queryAll(By.css('.mat-mdc-tab'));
     expect(tabs.length).toBe(2, 'Unexpected number of tabs found');
   });
-  it('Should display advanced courses when tab clicked', (done: DoneFn) => {
+  it('Should display advanced courses when tab clicked', fakeAsync(() => {
     coursesServiceSpy.findAllCourses.and.returnValue(of(setupCourses()));
     fixture.detectChanges();
 
     const tabs = el.queryAll(By.css('.mat-mdc-tab'));
     click(tabs[1]);
     fixture.detectChanges();
-    setTimeout(() => {
-      const cardTitles = el.queryAll(By.css('mat-card-title'));
-      expect(cardTitles.length).toBeGreaterThan(0, 'Could not find card titles');
-      expect(cardTitles[0].nativeElement.textContent).toContain('Angular Security Course');
-      done();
-    }, 500);
+    flush();
 
-  });
+    const cardTitles = el.queryAll(By.css('mat-card-title'));
+    expect(cardTitles.length).toBeGreaterThan(0, 'Could not find card titles');
+    expect(cardTitles[0].nativeElement.textContent).toContain('Angular Security Course');
+
+  }));
 });
