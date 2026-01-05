@@ -33,13 +33,27 @@ fdescribe('Async Testing examples', () => {
 
   it('Asynchronous test example - plain Promise', fakeAsync(() => {
     let test = false;
-    console.log('Creating promise');
     Promise.resolve().then(() => {
-      console.log('Promise evaluated successfully');
       test = true;
     });
     flushMicrotasks();
-    console.log('Running test assertions');
     expect(test).toBeTrue();
+  }));
+
+  it('Asynchronous test example - Promises + setTimeout()', fakeAsync(() => {
+    let counter = 0;
+    Promise.resolve().then(() => {
+      counter += 10;
+      setTimeout(() => {
+        counter += 1;
+      }, 1000);
+    });
+    expect(counter).toBe(0);
+    flushMicrotasks();
+    expect(counter).toBe(10);
+    tick(500);
+    expect(counter).toBe(10);
+    tick(500);
+    expect(counter).toBe(11);
   }));
 });
