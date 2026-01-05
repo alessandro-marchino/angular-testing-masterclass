@@ -59,7 +59,7 @@ describe('HomeComponent', () => {
     const tabs = el.queryAll(By.css('.mat-mdc-tab'));
     expect(tabs.length).toBe(2, 'Unexpected number of tabs found');
   });
-  it('Should display advanced courses when tab clicked', fakeAsync(() => {
+  it('Should display advanced courses when tab clicked - fakeAsync', fakeAsync(() => {
     coursesServiceSpy.findAllCourses.and.returnValue(of(setupCourses()));
     fixture.detectChanges();
 
@@ -71,6 +71,34 @@ describe('HomeComponent', () => {
     const cardTitles = el.queryAll(By.css('mat-card-title'));
     expect(cardTitles.length).toBeGreaterThan(0, 'Could not find card titles');
     expect(cardTitles[0].nativeElement.textContent).toContain('Angular Security Course');
-
   }));
+
+  it('Should display advanced courses when tab clicked - async', waitForAsync(() => {
+    coursesServiceSpy.findAllCourses.and.returnValue(of(setupCourses()));
+    fixture.detectChanges();
+
+    const tabs = el.queryAll(By.css('.mat-mdc-tab'));
+    click(tabs[1]);
+    fixture.detectChanges();
+
+    fixture.whenStable().then(() => {
+      const cardTitles = el.queryAll(By.css('mat-card-title'));
+      expect(cardTitles.length).toBeGreaterThan(0, 'Could not find card titles');
+      expect(cardTitles[0].nativeElement.textContent).toContain('Angular Security Course');
+    })
+  }));
+
+  it('Should display advanced courses when tab clicked - async/await', async () => {
+    coursesServiceSpy.findAllCourses.and.returnValue(of(setupCourses()));
+    fixture.detectChanges();
+
+    const tabs = el.queryAll(By.css('.mat-mdc-tab'));
+    click(tabs[1]);
+    fixture.detectChanges();
+
+    await fixture.whenStable();
+    const cardTitles = el.queryAll(By.css('mat-card-title'));
+    expect(cardTitles.length).toBeGreaterThan(0, 'Could not find card titles');
+    expect(cardTitles[0].nativeElement.textContent).toContain('Angular Security Course');
+  });
 });
