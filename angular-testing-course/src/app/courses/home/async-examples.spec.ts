@@ -30,4 +30,15 @@ fdescribe('Async Testing examples', () => {
     flush();
     expect(test).toBeTrue();
   }));
+
+  it('Asynchronous test example - plain Promise', () => {
+    let test = false;
+    console.log('Creating promise');
+    Promise.resolve().then(() => {
+      console.log('Promise evaluated successfully');
+      test = true;
+    });
+    console.log('Running test assertions');
+    expect(test).toBeTrue();
+  });
 });
