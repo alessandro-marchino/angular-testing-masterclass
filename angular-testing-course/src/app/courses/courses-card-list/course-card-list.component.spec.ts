@@ -17,6 +17,7 @@ describe('CoursesCardListComponent', () => {
     .compileComponents()
     .then(() => {
       fixture = TestBed.createComponent(CoursesCardListComponent);
+      fixture.autoDetectChanges();
       component = fixture.componentInstance;
       el = fixture.debugElement;
     })
@@ -26,20 +27,20 @@ describe('CoursesCardListComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should display the course list', () => {
-    component.courses = setupCourses();
-    fixture.detectChanges();
+  it('should display the course list', async () => {
+    fixture.componentRef.setInput('courses', setupCourses());
+    await fixture.whenStable();
 
     const cards = el.queryAll(By.css('.course-card'));
     expect(cards).toBeTruthy('Could not find cards');
     expect(cards.length).toBe(12, 'Unexpected number of courses');
   });
 
-  it('should display the first course', () => {
-    component.courses = setupCourses();
-    fixture.detectChanges();
+  it('should display the first course', async () => {
+    fixture.componentRef.setInput('courses', setupCourses());
+    await fixture.whenStable();
 
-    const course = component.courses[0];
+    const course = component.courses()[0];
     const card = el.query(By.css('.course-card:first-child'));
     expect(card).toBeTruthy('Could not find course card');
 
