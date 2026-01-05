@@ -14,7 +14,7 @@ export class HomeComponent implements OnInit {
   beginnerCourses = signal<Course[]>([]);
   advancedCourses = signal<Course[]>([]);
 
-  constructor(private coursesService: CoursesService) {}
+  constructor(public coursesService: CoursesService) {}
 
   ngOnInit() {
     this.reloadCourses();
