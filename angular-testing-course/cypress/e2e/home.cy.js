@@ -1,6 +1,9 @@
+/// <reference types="cypress" />
+
 describe('Home Page', () => {
-  it('should start', () => {
-    expect(true).to.equal(true);
+  it('should display a list of courses', () => {
+    cy.visit('/');
+    cy.contains('All Courses');
   })
 
     // beforeEach(() => {

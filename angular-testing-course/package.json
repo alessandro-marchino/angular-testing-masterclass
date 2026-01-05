@@ -11,9 +11,10 @@
     "lint": "ng lint",
     "cypress:open": "cypress open",
     "cypress:run": "cypress run",
-    "start:prod": "http-server ./dist -a localhost -p 4200",
+    "start:prod": "http-server ./dist/browser -a localhost -p 4200",
     "build-and-start": "run-s build start:prod",
-    "e2e": "start-server-and-test build-and-start http://localhost:4200 cypress:run"
+    "e2e": "start-server-and-test build-and-start http://localhost:4200 cypress:run",
+    "e2e:open": "start-server-and-test build-and-start http://localhost:4200 cypress:open"
   },
   "private": true,
   "dependencies": {
