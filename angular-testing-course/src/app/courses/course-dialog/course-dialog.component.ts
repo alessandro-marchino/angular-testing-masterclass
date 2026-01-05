@@ -1,4 +1,4 @@
-import {Component, Inject, OnInit, ViewEncapsulation} from '@angular/core';
+import {Component, Inject, OnInit} from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from "@angular/material/dialog";
 import {Course} from "../model/course";
 import {FormBuilder, Validators, FormGroup} from "@angular/forms";
@@ -7,51 +7,47 @@ import {CoursesService} from '../services/courses.service';
 import {tap} from 'rxjs/operators';
 
 @Component({
-    selector: 'course-dialog',
-    templateUrl: './course-dialog.component.html',
-    styleUrls: ['./course-dialog.component.css'],
-    standalone: false
+  selector: 'course-dialog',
+  templateUrl: './course-dialog.component.html',
+  styleUrls: ['./course-dialog.component.css'],
+  standalone: false
 })
 export class CourseDialogComponent implements OnInit {
 
-    course:Course;
-    form: FormGroup;
+  course: Course;
+  form: FormGroup;
 
-    constructor(
-        private fb: FormBuilder,
-        private dialogRef: MatDialogRef<CourseDialogComponent>,
-        @Inject(MAT_DIALOG_DATA) course:Course,
-        private coursesService: CoursesService) {
+  constructor(
+      private dialogRef: MatDialogRef<CourseDialogComponent>,
+      private coursesService: CoursesService,
+      fb: FormBuilder,
+      @Inject(MAT_DIALOG_DATA) course:Course) {
 
-        this.course = course;
+    this.course = course;
 
-        this.form = fb.group({
-            description: [course.titles.description, Validators.required],
-            category: [course.category, Validators.required],
-            releasedAt: [moment(), Validators.required],
-            longDescription: [course.titles.longDescription,Validators.required]
-        });
+    this.form = fb.group({
+      description: [course.titles.description, Validators.required],
+      category: [course.category, Validators.required],
+      releasedAt: [moment(), Validators.required],
+      longDescription: [course.titles.longDescription,Validators.required]
+    });
+  }
 
-    }
+  ngOnInit() {
+    // Empty
+  }
 
-    ngOnInit() {
+  save() {
+    const val = this.form.value;
+    this.coursesService.saveCourse(this.course.id, {titles: {description: val.description, longDescription: val.longDescription}})
+      .pipe(
+        tap(() => this.dialogRef.close(this.form.value))
+      )
+      .subscribe();
+  }
 
-    }
-
-
-    save() {
-
-      const val = this.form.value;
-
-      this.coursesService.saveCourse(this.course.id, {titles: {description: val.description, longDescription: val.longDescription}})
-        .pipe(
-          tap(() => this.dialogRef.close(this.form.value))
-        )
-        .subscribe();
-    }
-
-    close() {
-        this.dialogRef.close();
-    }
+  close() {
+      this.dialogRef.close();
+  }
 
 }
