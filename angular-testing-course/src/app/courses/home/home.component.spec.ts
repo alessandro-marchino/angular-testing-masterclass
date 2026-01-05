@@ -42,33 +42,36 @@ describe('HomeComponent', () => {
     coursesServiceSpy.findAllCourses.and.returnValue(of(setupCourses().filter(c => c.category === 'BEGINNER')));
     fixture.detectChanges();
 
-    const tabs = el.queryAll(By.css('.mdc-tab__text-label'));
+    const tabs = el.queryAll(By.css('.mat-mdc-tab'));
     expect(tabs.length).toBe(1, 'Unexpected number of tabs found');
   });
   it('Should display only advanced courses', () => {
     coursesServiceSpy.findAllCourses.and.returnValue(of(setupCourses().filter(c => c.category === 'ADVANCED')));
     fixture.detectChanges();
 
-    const tabs = el.queryAll(By.css('.mdc-tab__text-label'));
+    const tabs = el.queryAll(By.css('.mat-mdc-tab'));
     expect(tabs.length).toBe(1, 'Unexpected number of tabs found');
   });
   it('Should display both tabs', () => {
     coursesServiceSpy.findAllCourses.and.returnValue(of(setupCourses()));
     fixture.detectChanges();
 
-    const tabs = el.queryAll(By.css('.mdc-tab__text-label'));
+    const tabs = el.queryAll(By.css('.mat-mdc-tab'));
     expect(tabs.length).toBe(2, 'Unexpected number of tabs found');
   });
-  it('Should display advanced courses when tab clicked', () => {
+  it('Should display advanced courses when tab clicked', (done: DoneFn) => {
     coursesServiceSpy.findAllCourses.and.returnValue(of(setupCourses()));
     fixture.detectChanges();
 
-    const tabs = el.queryAll(By.css('.mdc-tab__text-label'));
+    const tabs = el.queryAll(By.css('.mat-mdc-tab'));
     click(tabs[1]);
     fixture.detectChanges();
+    setTimeout(() => {
+      const cardTitles = el.queryAll(By.css('mat-card-title'));
+      expect(cardTitles.length).toBeGreaterThan(0, 'Could not find card titles');
+      expect(cardTitles[0].nativeElement.textContent).toContain('Angular Security Course');
+      done();
+    }, 500);
 
-    const cardTitles = el.queryAll(By.css('mat-card-title'));
-    expect(cardTitles.length).toBeGreaterThan(0, 'Could not find card titles');
-    expect(cardTitles[0].nativeElement.textContent).toContain('Angular Security Course');
   });
 });
