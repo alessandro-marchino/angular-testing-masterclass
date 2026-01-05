@@ -7,6 +7,7 @@ import { CoursesService } from "../services/courses.service";
 import { of } from "rxjs";
 import { setupCourses } from "../common/setup-test-data";
 import { By } from "@angular/platform-browser";
+import { click } from "../common/test-utils";
 
 describe('HomeComponent', () => {
 
@@ -17,7 +18,6 @@ describe('HomeComponent', () => {
 
   beforeEach(waitForAsync(() => {
     coursesServiceSpy = jasmine.createSpyObj<CoursesService>('CoursesService', ['findAllCourses']);
-    console.log(coursesServiceSpy.findAllCourses);
     TestBed.configureTestingModule({
       imports: [
         CoursesModule,
@@ -59,5 +59,16 @@ describe('HomeComponent', () => {
     const tabs = el.queryAll(By.css('.mdc-tab__text-label'));
     expect(tabs.length).toBe(2, 'Unexpected number of tabs found');
   });
-  xit('Should display advanced courses when tab clicked', () => {});
+  it('Should display advanced courses when tab clicked', () => {
+    coursesServiceSpy.findAllCourses.and.returnValue(of(setupCourses()));
+    fixture.detectChanges();
+
+    const tabs = el.queryAll(By.css('.mdc-tab__text-label'));
+    click(tabs[1]);
+    fixture.detectChanges();
+
+    const cardTitles = el.queryAll(By.css('mat-card-title'));
+    expect(cardTitles.length).toBeGreaterThan(0, 'Could not find card titles');
+    expect(cardTitles[0].nativeElement.textContent).toContain('Angular Security Course');
+  });
 });

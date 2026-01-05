@@ -13,7 +13,7 @@ import {filter, tap} from 'rxjs/operators';
 export class CoursesCardListComponent implements OnInit {
 
   private readonly dialog = inject(MatDialog);
-  courses = input<Course[]>();
+  courses = input.required<Course[]>();
   courseEdited = output<void>();
 
   ngOnInit() {

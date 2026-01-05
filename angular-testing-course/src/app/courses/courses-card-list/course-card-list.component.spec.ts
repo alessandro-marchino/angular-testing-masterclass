@@ -17,7 +17,6 @@ describe('CoursesCardListComponent', () => {
     .compileComponents()
     .then(() => {
       fixture = TestBed.createComponent(CoursesCardListComponent);
-      fixture.autoDetectChanges();
       component = fixture.componentInstance;
       el = fixture.debugElement;
     })
@@ -29,6 +28,7 @@ describe('CoursesCardListComponent', () => {
 
   it('should display the course list', async () => {
     fixture.componentRef.setInput('courses', setupCourses());
+    fixture.autoDetectChanges();
     await fixture.whenStable();
 
     const cards = el.queryAll(By.css('.course-card'));
@@ -38,6 +38,7 @@ describe('CoursesCardListComponent', () => {
 
   it('should display the first course', async () => {
     fixture.componentRef.setInput('courses', setupCourses());
+    fixture.autoDetectChanges();
     await fixture.whenStable();
 
     const course = component.courses()[0];
