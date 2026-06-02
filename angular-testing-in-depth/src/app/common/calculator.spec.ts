@@ -33,4 +33,16 @@ describe("Vitest Fundamentals", () => {
     expect(addMock).toHaveBeenCalledOnce();
     expect(addMock).toHaveBeenCalledWith(10, 5);
   });
+
+  it("Shows how mocks clearing work", () => {
+    const spy = vi.spyOn(calculator, 'add').mockReturnValue(5);
+    const result = calculator.add(2, 3);
+    expect(result).toBe(5);
+    expect(spy).toHaveBeenCalledOnce();
+
+    spy.mockClear();
+    const result2 = calculator.add(5, 5);
+    expect(result2).not.toBe(10);
+    expect(spy).toHaveBeenCalledOnce();
+  });
 });
