@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from 'vitest';
 import { calculator } from './calculator';
 
 describe("Vitest Fundamentals", () => {
+
   it("Should add two numbers", () => {
     const result = calculator.add(2, 3);
     expect(result).toBe(5);
@@ -46,7 +47,7 @@ describe("Vitest Fundamentals", () => {
     expect(spy).toHaveBeenCalledOnce();
   });
 
-  it("Shows how mocks mockClear() works", () => {
+  it("Shows how mockClear() works", () => {
     const spy = vi.spyOn(calculator, 'add').mockReturnValue(5);
     const result = calculator.add(2, 3);
     expect(result).toBe(5);
@@ -58,7 +59,7 @@ describe("Vitest Fundamentals", () => {
     expect(spy).toHaveBeenCalledOnce();
   });
 
-  it("Shows how mocks mockReset() works for spies", () => {
+  it("Shows how mockReset() works for spies", () => {
     const spy = vi.spyOn(calculator, 'add').mockReturnValue(5);
     const result = calculator.add(2, 3);
     expect(result).toBe(5);
@@ -70,7 +71,7 @@ describe("Vitest Fundamentals", () => {
     expect(spy).toHaveBeenCalledOnce();
   });
 
-  it("Shows how mocks mockReset() works for pure mocks", () => {
+  it("Shows how mockReset() works for pure mocks", () => {
     const addMock = vi.fn().mockReturnValue(5);
     const result = addMock(2, 3);
     expect(result).toBe(5);
@@ -84,7 +85,7 @@ describe("Vitest Fundamentals", () => {
     expect(addMock).toHaveBeenCalledWith(5, 5);
   });
 
-   it("Shows how mocks mockRestore() works", () => {
+   it("Shows how mockRestore() works", () => {
     const spy = vi.spyOn(calculator, 'add').mockReturnValue(10);
     const result = calculator.add(2, 3);
     expect(result).toBe(10);
