@@ -15,7 +15,7 @@ describe("Vitest Fundamentals", () => {
     expect(spy).toHaveBeenCalledWith(2, 3);
   });
 
-  it("Shows how mocking work", () => {
+  it("Shows how mocking works", () => {
     const spy = vi.spyOn(calculator, 'add').mockReturnValue(5);
     const result = calculator.add(2, 3);
     expect(result).toBe(5);
@@ -34,7 +34,7 @@ describe("Vitest Fundamentals", () => {
     expect(addMock).toHaveBeenCalledWith(10, 5);
   });
 
-  it("Shows how mocks clearing work", () => {
+  it("Shows how mocks clearing works", () => {
     const spy = vi.spyOn(calculator, 'add').mockReturnValue(5);
     const result = calculator.add(2, 3);
     expect(result).toBe(5);
@@ -44,5 +44,55 @@ describe("Vitest Fundamentals", () => {
     const result2 = calculator.add(5, 5);
     expect(result2).not.toBe(10);
     expect(spy).toHaveBeenCalledOnce();
+  });
+
+  it("Shows how mocks mockClear() works", () => {
+    const spy = vi.spyOn(calculator, 'add').mockReturnValue(5);
+    const result = calculator.add(2, 3);
+    expect(result).toBe(5);
+    expect(spy).toHaveBeenCalledOnce();
+
+    spy.mockClear();
+    const result2 = calculator.add(5, 5);
+    expect(result2).not.toBe(10);
+    expect(spy).toHaveBeenCalledOnce();
+  });
+
+  it("Shows how mocks mockReset() works for spies", () => {
+    const spy = vi.spyOn(calculator, 'add').mockReturnValue(5);
+    const result = calculator.add(2, 3);
+    expect(result).toBe(5);
+    expect(spy).toHaveBeenCalledOnce();
+
+    spy.mockReset();
+    const result2 = calculator.add(5, 5);
+    expect(result2).toBe(10);
+    expect(spy).toHaveBeenCalledOnce();
+  });
+
+  it("Shows how mocks mockReset() works for pure mocks", () => {
+    const addMock = vi.fn().mockReturnValue(5);
+    const result = addMock(2, 3);
+    expect(result).toBe(5);
+    expect(addMock).toHaveBeenCalledOnce();
+    expect(addMock).toHaveBeenCalledWith(2, 3);
+
+    addMock.mockReset();
+    const result2 = addMock(5, 5);
+    expect(result2).toBeUndefined();
+    expect(addMock).toHaveBeenCalledOnce();
+    expect(addMock).toHaveBeenCalledWith(5, 5);
+  });
+
+   it("Shows how mocks mockRestore() works", () => {
+    const spy = vi.spyOn(calculator, 'add').mockReturnValue(10);
+    const result = calculator.add(2, 3);
+    expect(result).toBe(10);
+    expect(spy).toHaveBeenCalledOnce();
+
+    spy.mockRestore()
+    const result2 = calculator.add(2, 3);
+    expect(result2).toBe(5);
+    expect(spy).toHaveBeenCalledTimes(0);
   });
 });
