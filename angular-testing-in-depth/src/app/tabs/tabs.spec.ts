@@ -40,4 +40,11 @@ describe('TabsComponent', () => {
     const button = de.query(By.css('.tab-link:last-child'));
     expect(button.nativeElement.classList).toContain('active');
   });
+
+  it('Should emit activeTab when a tab is clicked', () => {
+    const button = de.query(By.css('.tab-link:last-child'));
+    button.nativeElement.click();
+    fixture.detectChanges();
+    expect(component.activeTab()).toBe('advanced');
+  })
 });
