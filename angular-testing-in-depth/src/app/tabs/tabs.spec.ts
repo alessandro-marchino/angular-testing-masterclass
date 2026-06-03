@@ -1,4 +1,4 @@
-import { assert, beforeEach, describe, expect, it } from 'vitest';
+import { assert, beforeEach, describe, expect, it, vi } from 'vitest';
 import { TabsComponent } from './tabs';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { TabData } from './tabs.model';
@@ -21,7 +21,7 @@ describe('TabsComponent', () => {
     component = fixture.componentInstance;
     de = fixture.debugElement;
     fixture.detectChanges();
-  })
+  });
 
   it('Should create the TabComponent', () => {
     expect(component).toBeDefined();
@@ -46,5 +46,14 @@ describe('TabsComponent', () => {
     button.nativeElement.click();
     fixture.detectChanges();
     expect(component.activeTab()).toBe('advanced');
-  })
+  });
+
+  it('Should emit tabChanged when a tab is clicked', () => {
+    const emitSpy = vi.spyOn(component.tabChanged, 'emit');
+    const button = de.query(By.css('.tab-link:last-child'));
+    button.nativeElement.click();
+    fixture.detectChanges();
+    expect(emitSpy).toHaveBeenCalledOnce();
+    expect(emitSpy).toHaveBeenCalledWith('advanced');
+  });
 });
