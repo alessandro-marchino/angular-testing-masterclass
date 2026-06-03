@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it } from 'vitest';
+import { assert, beforeEach, describe, expect, it } from 'vitest';
 import { TabsComponent } from './tabs';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { TabData } from './tabs.model';
@@ -32,5 +32,12 @@ describe('TabsComponent', () => {
     expect(buttons.length).toBe(2);
     expect(buttons[0].nativeElement.textContent.trim()).toBe('Beginner');
     expect(buttons[1].nativeElement.textContent.trim()).toBe('Advanced');
+  });
+
+  it('Should apply the active class to the selected tab', () => {
+    fixture.componentRef.setInput('activeTab', 'advanced');
+    fixture.detectChanges();
+    const button = de.query(By.css('.tab-link:last-child'));
+    expect(button.nativeElement.classList).toContain('active');
   });
 });
