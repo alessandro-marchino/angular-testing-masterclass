@@ -3,10 +3,13 @@ import { CoursesCardList } from './courses-card-list';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { MOCK_COURSES } from '../testing/testing-data';
+import { DebugElement } from '@angular/core';
+import { By } from '@angular/platform-browser';
 
 describe('CoursesCardList', () => {
   let component: CoursesCardList;
   let fixture: ComponentFixture<CoursesCardList>;
+  let de: DebugElement;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -15,6 +18,7 @@ describe('CoursesCardList', () => {
     }).compileComponents();
     fixture = TestBed.createComponent(CoursesCardList);
     component = fixture.componentInstance;
+    de = fixture.debugElement;
 
     fixture.componentRef.setInput('courses', MOCK_COURSES);
     fixture.detectChanges();
@@ -25,6 +29,9 @@ describe('CoursesCardList', () => {
   });
 
   it('Should display the course list', () => {
-
+    const cardTitles = de.queryAll(By.css('.course-card .card-header'));
+    expect(cardTitles.length).toBe(2);
+    const titleEl = cardTitles[0].nativeElement;
+    expect(titleEl.textContent).toBe('Beginner Course')
   });
 });
