@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { Courses } from './courses';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { DebugElement } from '@angular/core';
@@ -32,9 +32,8 @@ describe('CoursesController', () => {
     httpMock = TestBed.inject(HttpTestingController);
     fixture.detectChanges();
   });
-
-  it('Should create the CoursesController', () => {
-    expect(component).toBeDefined();
+  afterEach(() => {
+    httpMock.verify();
   });
 
   it('Should load courses and filter by category', async () => {
@@ -50,7 +49,19 @@ describe('CoursesController', () => {
     expect(titleEl.textContent).toBe('Beginner Course');
   });
 
-  it.skip('Should show advanced courses when tab clicked', () => {
+  it('Should show advanced courses when tab clicked', async () => {
+    const req = httpMock.expectOne('/api/courses');
+    req.flush({ payload: MOCK_COURSES });
+    await fixture.whenStable();
 
+    const btn = de.query(By.css('.tab-link:last-child'));
+    btn.nativeElement.click();
+    fixture.detectChanges();
+
+    const titles = de.queryAll(By.css('.course-card .card-header'));
+    expect(titles).toHaveLength(1);
+
+    const titleEl = titles[0].nativeElement;
+    expect(titleEl.textContent).toBe('Advanced Course');
   });
 });
