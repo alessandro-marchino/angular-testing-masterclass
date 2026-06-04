@@ -6,7 +6,7 @@ import { getMockLessonsPage, MOCK_COURSES } from '../testing/testing-data';
 import { CoursesService } from '../services/courses.service';
 import { ActivatedRoute } from '@angular/router';
 
-import { getTableContent } from '../testing/testing-utils';
+import { clickButton, getTableContent } from '../testing/testing-utils';
 import { By } from '@angular/platform-browser';
 
 const FIRST_PAGE = getMockLessonsPage(1, '', 'asc', 0, 3);
@@ -55,5 +55,26 @@ describe('CoursePage', () => {
     expect(spinner).toBeTruthy();
 
     expect(component.loading()).toBe(true);
+  });
+
+  it('Should navigate to next page', async() => {
+    mockCoursesService.findLessons.mockReturnValueOnce(FIRST_PAGE);
+    await fixture.whenStable();
+    expect(mockCoursesService.findLessons).toHaveBeenCalledOnce();
+    expect(mockCoursesService.findLessons).toHaveBeenCalledWith(1, '', 'asc', 0, 3);
+
+    mockCoursesService.findLessons.mockClear();
+    mockCoursesService.findLessons.mockReturnValueOnce(SECOND_PAGE);
+    clickButton(de, '.page-controls button:last-child');
+    await fixture.whenStable();
+
+    expect(mockCoursesService.findLessons).toHaveBeenCalledOnce();
+    expect(mockCoursesService.findLessons).toHaveBeenCalledWith(1, '', 'asc', 1, 3);
+
+    const lessons = getTableContent(de, 'tbody tr td.description-cell');
+    expect(lessons).toHaveLength(3);
+    expect(lessons[0]).toBe("Lesson 4");
+    expect(lessons[1]).toBe("Lesson 5");
+    expect(lessons[2]).toBe("Lesson 6");
   });
 });
