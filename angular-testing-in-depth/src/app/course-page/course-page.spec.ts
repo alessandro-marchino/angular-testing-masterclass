@@ -7,6 +7,7 @@ import { CoursesService } from '../services/courses.service';
 import { ActivatedRoute } from '@angular/router';
 
 import { getTableContent } from '../testing/testing-utils';
+import { By } from '@angular/platform-browser';
 
 const FIRST_PAGE = getMockLessonsPage(1, '', 'asc', 0, 3);
 const SECOND_PAGE = getMockLessonsPage(1, '', 'asc', 1, 3);
@@ -46,5 +47,13 @@ describe('CoursePage', () => {
     expect(lessons[0]).toBe("Lesson 1");
     expect(lessons[1]).toBe("Lesson 2");
     expect(lessons[2]).toBe("Lesson 3");
+  });
+
+  it('Should show the loading spinner while fetching', async () => {
+    fixture.detectChanges();
+    const spinner = de.query(By.css('.loading-spinner'));
+    expect(spinner).toBeTruthy();
+
+    expect(component.loading()).toBe(true);
   });
 });
