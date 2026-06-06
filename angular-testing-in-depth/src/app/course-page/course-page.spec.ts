@@ -172,5 +172,26 @@ describe('CoursePage', () => {
 
   it('Should debounce search input by 400ms', async () => {
     vi.useFakeTimers();
+    mockCoursesService.findLessons.mockReturnValueOnce(FIRST_PAGE);
+    fixture.detectChanges();
+    expect(mockCoursesService.findLessons).toHaveBeenCalledTimes(1);
+
+    mockCoursesService.findLessons.mockReturnValueOnce(SEARCH_RESULTS);
+    component.onSearch('Lesson 20');
+    vi.advanceTimersByTime(399);
+    fixture.detectChanges();
+    expect(mockCoursesService.findLessons).toHaveBeenCalledTimes(1);
+
+    vi.advanceTimersByTime(1);
+    fixture.detectChanges();
+    expect(mockCoursesService.findLessons).toHaveBeenCalledTimes(2);
+    expect(mockCoursesService.findLessons).toHaveBeenLastCalledWith(1, 'Lesson 20', 'asc', 0, 3);
+
+    await vi.runAllTimersAsync();
+    expect(component.lessons()).toHaveLength(1);
+
+    const lessons = getTableContent(de, 'tbody tr td.description-cell');
+    expect(lessons).toHaveLength(1);
+    expect(lessons[0]).toBe("Lesson 20");
   });
 });
