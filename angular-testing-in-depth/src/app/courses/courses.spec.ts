@@ -9,11 +9,15 @@ import { provideRouter } from '@angular/router';
 import { MOCK_COURSES } from '../testing/testing-data';
 import { By } from '@angular/platform-browser';
 
+import { TabsHarness } from '../tabs/tabs.harness';
+import { TestbedHarnessEnvironment } from '@angular/cdk/testing/testbed';
+
 describe('CoursesController', () => {
   let component: Courses;
   let fixture: ComponentFixture<Courses>;
   let de: DebugElement;
   let httpMock: HttpTestingController;
+  let tabs: TabsHarness;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
@@ -30,6 +34,10 @@ describe('CoursesController', () => {
     component = fixture.componentInstance;
     de = fixture.debugElement;
     httpMock = TestBed.inject(HttpTestingController);
+
+    const loader = TestbedHarnessEnvironment.loader(fixture);
+    tabs = await loader.getHarness(TabsHarness);
+
     fixture.detectChanges();
   });
   afterEach(() => {
@@ -47,6 +55,9 @@ describe('CoursesController', () => {
 
     const titleEl = titles[0].nativeElement;
     expect(titleEl.textContent).toBe('Beginner Course');
+
+    expect(await tabs.getTabLabels()).toEqual(['Beginner', 'Advanced']);
+    expect(await tabs.getActiveLabel()).toEqual('Beginner')
   });
 
   it('Should show advanced courses when tab clicked', async () => {
@@ -54,9 +65,7 @@ describe('CoursesController', () => {
     req.flush({ payload: MOCK_COURSES });
     await fixture.whenStable();
 
-    const btn = de.query(By.css('.tab-link:last-child'));
-    btn.nativeElement.click();
-    fixture.detectChanges();
+    await tabs.clickTabByIndex(1);
 
     const titles = de.queryAll(By.css('.course-card .card-header'));
     expect(titles).toHaveLength(1);
