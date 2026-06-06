@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, Mock, vi } from 'vitest';
 import { CoursePage } from './course-page';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { DebugElement } from '@angular/core';
@@ -36,6 +36,9 @@ describe('CoursePage', () => {
     component = fixture.componentInstance;
     de = fixture.debugElement;
   });
+  afterEach(() => {
+    vi.useRealTimers();
+  })
 
   it('Should load lessons on init', async () => {
     mockCoursesService.findLessons.mockReturnValueOnce(FIRST_PAGE);
@@ -165,5 +168,9 @@ describe('CoursePage', () => {
     expect(lessons).toHaveLength(10);
     expect(lessons[0]).toBe("Lesson 1");
     expect(lessons[9]).toBe("Lesson 10");
+  });
+
+  it('Should debounce search input by 400ms', async () => {
+    vi.useFakeTimers();
   });
 });
