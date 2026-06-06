@@ -7,6 +7,7 @@ import { MOCK_COURSES } from '../testing/testing-data';
 import { DebugElement } from '@angular/core';
 import { By } from '@angular/platform-browser';
 import { FieldState } from '@angular/forms/signals';
+import { clickButton } from '../testing/testing-utils';
 
 describe('CoursesDialog', () => {
   let mockCoursesService: Partial<CoursesService>;
@@ -18,7 +19,7 @@ describe('CoursesDialog', () => {
 
   beforeEach(async () => {
     mockCoursesService = {
-      saveCourse: vi.fn()
+      saveCourse: vi.fn().mockResolvedValueOnce({})
     };
     mockDialogRef = {
       close: vi.fn()
@@ -52,6 +53,16 @@ describe('CoursesDialog', () => {
     testFieldError(component.courseForm.category(), '.category', 'Category is required');
     testFieldError(component.courseForm.releasedAt(), '.released-at', 'Release Date is required');
     testFieldError(component.courseForm.longDescription(), '.long-description', 'Long Description is required');
+  });
+
+  it('Should call saveCourse and close dialog', async () => {
+    component.courseForm.description().value.set('New Course title');
+    fixture.detectChanges();
+    clickButton(de, '.btn-primary');
+    await fixture.whenStable();
+
+    expect(mockCoursesService.saveCourse).toHaveBeenLastCalledWith(1, expect.objectContaining({ titles: expect.objectContaining({ description: 'New Course title' }) }));
+    expect(mockDialogRef.close).toHaveBeenCalled();
   });
 
   function testFieldError(fieldState: FieldState<any>, selector: string, message: string) {
