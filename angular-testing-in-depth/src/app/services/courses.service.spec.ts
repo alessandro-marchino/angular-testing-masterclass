@@ -1,8 +1,9 @@
-import { afterEach, beforeEach, describe } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { CoursesService } from './courses.service';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
+import { MOCK_COURSES } from '../testing/testing-data';
 
 describe('CoursesService', () => {
   let service: CoursesService;
@@ -21,5 +22,16 @@ describe('CoursesService', () => {
   });
   afterEach(() => {
     httpTestingController.verify();
-  })
+  });
+
+  it('Should load all courses', async () => {
+    const coursesPromise = service.reloadAllCourses();
+
+    const req = httpTestingController.expectOne('/api/courses');
+    expect(req.request.method).toBe('GET');
+    req.flush({ payload: MOCK_COURSES });
+    const result = await coursesPromise;
+    expect(result).toBe(MOCK_COURSES);
+    expect(service.allCourses()).toBe(MOCK_COURSES);
+  });
 });
