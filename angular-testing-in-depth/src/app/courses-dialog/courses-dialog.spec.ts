@@ -6,6 +6,7 @@ import { CoursesDialog } from './courses-dialog';
 import { MOCK_COURSES } from '../testing/testing-data';
 import { DebugElement } from '@angular/core';
 import { By } from '@angular/platform-browser';
+import { FieldState } from '@angular/forms/signals';
 
 describe('CoursesDialog', () => {
   let mockCoursesService: Partial<CoursesService>;
@@ -46,16 +47,24 @@ describe('CoursesDialog', () => {
     expect(component.courseForm().valid()).toBe(true);
   });
 
-  it('Should handle description error', () => {
-    component.courseForm.description().value.set('');
-    component.courseForm.description().markAsTouched();
+  it('Should handle all form field errors', () => {
+    testFieldError(component.courseForm.description(), '.description', 'Description is required');
+    testFieldError(component.courseForm.category(), '.category', 'Category is required');
+    testFieldError(component.courseForm.releasedAt(), '.released-at', 'Release Date is required');
+    testFieldError(component.courseForm.longDescription(), '.long-description', 'Long Description is required');
+  });
+
+  function testFieldError(fieldState: FieldState<any>, selector: string, message: string) {
+    fieldState.value.set('');
+    fieldState.markAsTouched();
     fixture.detectChanges();
 
-    const errorList = de.query(By.css('.description .error-list'));
+    const errorList = de.query(By.css(`${selector} .error-list`));
     expect(errorList).toBeTruthy();
-    expect(errorList.nativeElement.textContent).toContain('Description is required');
+    expect(errorList.nativeElement.textContent).toContain(message);
 
     const saveButton = de.query(By.css('.btn-primary')).nativeElement as HTMLButtonElement;
     expect(saveButton.disabled).toBe(true)
-  });
+  }
 });
+
