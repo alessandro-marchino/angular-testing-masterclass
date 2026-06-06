@@ -3,7 +3,8 @@ import { CoursesService } from './courses.service';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
-import { MOCK_COURSES } from '../testing/testing-data';
+import { createCourse, MOCK_COURSES } from '../testing/testing-data';
+import { Course } from '../model/course';
 
 describe('CoursesService', () => {
   let service: CoursesService;
@@ -65,5 +66,32 @@ describe('CoursesService', () => {
 
     const result = await lessonsPromise;
     expect(result).toBe(mockLessons.payload);
+  });
+
+  it('Should save course', async() => {
+    const course1 = createCourse({ id: 1, titles: { description: 'Initial Title' } });
+    const course2 = createCourse({ id: 2, titles: { description: 'Stay Same' } });
+
+    const loadPromise = service.reloadAllCourses();
+    const loadReq = httpTestingController.expectOne('/api/courses');
+    loadReq.flush({ payload: [ course1, course2 ] });
+    await loadPromise;
+
+    const changes: Partial<Course> = { titles: { description: 'New Title' }};
+    const savePromise = service.saveCourse(1, changes);
+    const saveReq = httpTestingController.expectOne('/api/courses/1');
+    expect(saveReq.request.method).toBe('PUT');
+    expect(saveReq.request.body).toBe(changes);
+
+    saveReq.flush({ ...course1, ...changes });
+    await savePromise;
+
+    const allCourses = service.allCourses();
+    expect(allCourses).toHaveLength(2);
+    expect(allCourses[0].id).toBe(1);
+    expect(allCourses[0].titles.description).toBe('New Title');
+    expect(allCourses[1].id).toBe(2);
+    expect(allCourses[1].titles.description).toBe('Stay Same');
+
   });
 });
