@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { beforeEach, describe, it, Mock, vi } from 'vitest';
+import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
 import { CoursesService } from '../services/courses.service';
 import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { CoursesDialog } from './courses-dialog';
@@ -36,5 +36,12 @@ describe('CoursesDialog', () => {
     fixture.detectChanges();
   });
 
-  it('', () => {})
+  it('Should initialize the form with course data', () => {
+    expect(component.courseForm.description().value()).toBe('Beginner Course');
+    expect(component.courseForm.category().value()).toBe('BEGINNER');
+    expect(component.courseForm.releasedAt().value()).toBe(new Date().toLocaleDateString('en-CA'));
+    expect(component.courseForm.longDescription().value()).toBe('Theory');
+
+    expect(component.courseForm().valid()).toBe(true);
+  })
 });
