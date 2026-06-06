@@ -5,6 +5,7 @@ import { DIALOG_DATA, DialogRef } from '@angular/cdk/dialog';
 import { CoursesDialog } from './courses-dialog';
 import { MOCK_COURSES } from '../testing/testing-data';
 import { DebugElement } from '@angular/core';
+import { By } from '@angular/platform-browser';
 
 describe('CoursesDialog', () => {
   let mockCoursesService: Partial<CoursesService>;
@@ -43,5 +44,18 @@ describe('CoursesDialog', () => {
     expect(component.courseForm.longDescription().value()).toBe('Theory');
 
     expect(component.courseForm().valid()).toBe(true);
-  })
+  });
+
+  it('Should handle description error', () => {
+    component.courseForm.description().value.set('');
+    component.courseForm.description().markAsTouched();
+    fixture.detectChanges();
+
+    const errorList = de.query(By.css('.description .error-list'));
+    expect(errorList).toBeTruthy();
+    expect(errorList.nativeElement.textContent).toContain('Description is required');
+
+    const saveButton = de.query(By.css('.btn-primary')).nativeElement as HTMLButtonElement;
+    expect(saveButton.disabled).toBe(true)
+  });
 });
