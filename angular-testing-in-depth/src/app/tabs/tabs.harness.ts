@@ -2,13 +2,21 @@ import { ComponentHarness } from '@angular/cdk/testing';
 
 export class TabsHarness extends ComponentHarness {
   static hostSelector = 'tabs';
+  private getButtons = this.locatorForAll('button.tab-link')
 
   async getTabLabels(): Promise<string[]> {
-    return [];
+    const buttons = await this.getButtons();
+    return Promise.all(buttons.map(button => button.text()));
   }
-  async getActiveLabel(): Promise<string|undefined> {
-    return;
+  async getActiveLabel(): Promise<string|null> {
+    const buttons = await this.getButtons();
+    return buttons.find(button => button.hasClass('active'))?.text() ?? null;
   }
   async clickTabByIndex(index: number): Promise<void> {
+    const buttons = await this.getButtons();
+    if(index < 0 || index > buttons.length) {
+      throw new Error(`No tab found at index ${index}. Found ${buttons.length} tabs.`);
+    }
+    await buttons[index].click()
   }
 }
