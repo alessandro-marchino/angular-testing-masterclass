@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it, Mock, vi } from 'vitest';
 import { CoursePage } from './course-page';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { DebugElement } from '@angular/core';
-import { getMockLessonsPage, MOCK_COURSES } from '../testing/testing-data';
+import { getMockLessonsPage, MOCK_COURSES, MOCK_LESSONS } from '../testing/testing-data';
 import { CoursesService } from '../services/courses.service';
 import { ActivatedRoute } from '@angular/router';
 
@@ -40,7 +40,7 @@ describe('CoursePage', () => {
   it('Should load lessons on init', async () => {
     mockCoursesService.findLessons.mockReturnValueOnce(FIRST_PAGE);
     await fixture.whenStable();
-    expect(mockCoursesService.findLessons).toHaveBeenCalledWith(1, '', 'asc', 0, 3);
+    expect(mockCoursesService.findLessons).toHaveBeenLastCalledWith(1, '', 'asc', 0, 3);
 
     const lessons = getTableContent(de, 'tbody tr td.description-cell');
     expect(lessons).toHaveLength(3);
@@ -61,7 +61,7 @@ describe('CoursePage', () => {
     mockCoursesService.findLessons.mockReturnValueOnce(FIRST_PAGE);
     await fixture.whenStable();
     expect(mockCoursesService.findLessons).toHaveBeenCalledOnce();
-    expect(mockCoursesService.findLessons).toHaveBeenCalledWith(1, '', 'asc', 0, 3);
+    expect(mockCoursesService.findLessons).toHaveBeenLastCalledWith(1, '', 'asc', 0, 3);
 
     mockCoursesService.findLessons.mockClear();
     mockCoursesService.findLessons.mockReturnValueOnce(SECOND_PAGE);
@@ -69,12 +69,73 @@ describe('CoursePage', () => {
     await fixture.whenStable();
 
     expect(mockCoursesService.findLessons).toHaveBeenCalledOnce();
-    expect(mockCoursesService.findLessons).toHaveBeenCalledWith(1, '', 'asc', 1, 3);
+    expect(mockCoursesService.findLessons).toHaveBeenLastCalledWith(1, '', 'asc', 1, 3);
 
     const lessons = getTableContent(de, 'tbody tr td.description-cell');
     expect(lessons).toHaveLength(3);
     expect(lessons[0]).toBe("Lesson 4");
     expect(lessons[1]).toBe("Lesson 5");
     expect(lessons[2]).toBe("Lesson 6");
+  });
+
+  it('Should navigate to next page', async() => {
+    mockCoursesService.findLessons
+      .mockReturnValueOnce(SECOND_PAGE)
+      .mockReturnValueOnce(FIRST_PAGE);
+
+    component.pageIndex.set(1);
+    await fixture.whenStable();
+
+    expect(mockCoursesService.findLessons).toHaveBeenCalledOnce();
+    expect(mockCoursesService.findLessons).toHaveBeenLastCalledWith(1, '', 'asc', 1, 3);
+
+    const lessons = getTableContent(de, 'tbody tr td.description-cell');
+    expect(lessons).toHaveLength(3);
+    expect(lessons[0]).toBe("Lesson 4");
+    expect(lessons[1]).toBe("Lesson 5");
+    expect(lessons[2]).toBe("Lesson 6");
+
+    clickButton(de, '.page-controls button:first-child');
+    await fixture.whenStable();
+
+    expect(mockCoursesService.findLessons).toHaveBeenCalledTimes(2);
+    expect(mockCoursesService.findLessons).toHaveBeenLastCalledWith(1, '', 'asc', 0, 3);
+
+    const newLessons = getTableContent(de, 'tbody tr td.description-cell');
+    expect(newLessons).toHaveLength(3);
+    expect(newLessons[0]).toBe("Lesson 1");
+    expect(newLessons[1]).toBe("Lesson 2");
+    expect(newLessons[2]).toBe("Lesson 3");
+  });
+
+  it('Should toggle sort direction', async () => {
+    mockCoursesService.findLessons.mockReturnValueOnce(FIRST_PAGE);
+
+    await fixture.whenStable();
+
+    expect(mockCoursesService.findLessons).toHaveBeenCalledOnce();
+    expect(mockCoursesService.findLessons).toHaveBeenLastCalledWith(1, '', 'asc', 0, 3);
+    expect(component.sortDirection()).toBe('asc');
+
+    const lessons = getTableContent(de, 'tbody tr td.description-cell');
+    expect(lessons).toHaveLength(3);
+    expect(lessons[0]).toBe("Lesson 1");
+    expect(lessons[1]).toBe("Lesson 2");
+    expect(lessons[2]).toBe("Lesson 3");
+
+    mockCoursesService.findLessons.mockReturnValueOnce([...MOCK_LESSONS].reverse().slice(0, 3));
+
+    clickButton(de, '.sortable');
+    await fixture.whenStable();
+
+    expect(component.sortDirection()).toBe('desc');
+    expect(mockCoursesService.findLessons).toHaveBeenCalledTimes(2);
+    expect(mockCoursesService.findLessons).toHaveBeenLastCalledWith(1, '', 'desc', 0, 3);
+
+    const newLessons = getTableContent(de, 'tbody tr td.description-cell');
+    expect(newLessons).toHaveLength(3);
+    expect(newLessons[0]).toBe("Lesson 20");
+    expect(newLessons[1]).toBe("Lesson 19");
+    expect(newLessons[2]).toBe("Lesson 18");
   });
 });
