@@ -138,4 +138,32 @@ describe('CoursePage', () => {
     expect(newLessons[1]).toBe("Lesson 19");
     expect(newLessons[2]).toBe("Lesson 18");
   });
+
+  it('Should update page size', async () => {
+    mockCoursesService.findLessons.mockReturnValueOnce(FIRST_PAGE);
+
+    await fixture.whenStable();
+
+    expect(mockCoursesService.findLessons).toHaveBeenCalledOnce();
+    expect(mockCoursesService.findLessons).toHaveBeenLastCalledWith(1, '', 'asc', 0, 3);
+    expect(component.pageSize()).toBe(3);
+
+    mockCoursesService.findLessons.mockReturnValueOnce(getMockLessonsPage(1, '', 'asc', 0, 10));
+
+    const selectEl = de.query(By.css('.items-label select')).nativeElement as HTMLSelectElement;
+    selectEl.value = '10';
+    selectEl.dispatchEvent(new Event('change'));
+
+    await fixture.whenStable();
+
+    expect(component.pageSize()).toBe(10);
+    expect(component.pageIndex()).toBe(0);
+    expect(mockCoursesService.findLessons).toHaveBeenCalledTimes(2);
+    expect(mockCoursesService.findLessons).toHaveBeenLastCalledWith(1, '', 'asc', 0, 10);
+
+    const lessons = getTableContent(de, 'tbody tr td.description-cell');
+    expect(lessons).toHaveLength(10);
+    expect(lessons[0]).toBe("Lesson 1");
+    expect(lessons[9]).toBe("Lesson 10");
+  });
 });
