@@ -46,4 +46,24 @@ describe('CoursesService', () => {
     expect(course.id).toBe(1);
     expect(course.titles.description).toBe('Beginner Course');
   });
+
+  it('Should find lessons by query', async() => {
+    const lessonsPromise = service.findLessons(12, 'filter-text', 'desc', 2, 10);
+
+    const req = httpTestingController.expectOne(req => req.url === '/api/lessons');
+    const params = req.request.params;
+    expect(req.request.method).toBe('GET');
+    expect(params.get('courseId')).toBe('12');
+    expect(params.get('filter')).toBe('filter-text');
+    expect(params.get('sortOrder')).toBe('desc');
+    expect(params.get('pageNumber')).toBe('2');
+    expect(params.get('pageSize')).toBe('10');
+
+    const mockLessons = { payload: [ { id: 12, description: 'Lesson1' } ] };
+
+    req.flush(mockLessons);
+
+    const result = await lessonsPromise;
+    expect(result).toBe(mockLessons.payload);
+  });
 });
